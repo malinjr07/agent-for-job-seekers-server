@@ -13,7 +13,124 @@ datasource db {
 }
 
 model User {
-  id    String  @id @default(uuid(7)) @db.Uuid
-  email String  @unique
-  name  String?
+  id           String        @id @default(uuid(7)) @db.Uuid
+  email        String        @unique @db.VarChar(255)
+  passwordHash String        @db.VarChar(255)
+  firstName    String        @db.VarChar(100)
+  lastName     String        @db.VarChar(100)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  googleSheets   GoogleSheet[]
+  emailTemplates EmailTemplate[]
+  resumes        Resume[]
+  mailLogs       MailLog[]
+  leads          Lead[]
+}
+
+model GoogleSheet {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  userId     String   @db.Uuid
+  sheetUrl   String   @db.Text
+  sheetId    String   @db.VarChar(255)
+  currentTab String   @db.VarChar(100)
+  createdAt  DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headers Header[]
+}
+
+model Header {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  googleSheetId String   @db.Uuid
+  tabName       String   @db.VarChar(100)
+  headers       Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  googleSheet GoogleSheet @relation(fields: [googleSheetId], references: [id], onDelete: Cascade)
+}
+
+model EmailTemplate {
+  id           String     @id @default(uuid(7)) @db.Uuid
+  userId       String     @db.Uuid
+  name         String     @db.VarChar(255)
+  templateBody String     @db.Text
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mailLogs MailLog[]
+  resumes  Resume[]  @relation("TemplateResumes")
+}
+
+model Resume {
+  id          String          @id @default(uuid(7)) @db.Uuid
+  userId      String          @db.Uuid
+  name        String          @db.VarChar(255)
+  htmlContent String          @db.Text
+  pdfPath     String?         @db.Text
+  variables   Json?
+  templateId  String?         @db.Uuid
+  createdAt   DateTime        @default(now())
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template EmailTemplate?  @relation("TemplateResumes", fields: [templateId], references: [id])
+  sections ResumeSection[]
+  mailLogs MailLog[]
+}
+
+model ResumeSection {
+  id          String  @id @default(uuid(7)) @db.Uuid
+  resumeId    String  @db.Uuid
+  sectionType String  @db.VarChar(50)
+  content     Json
+  orderIndex  Int
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+}
+
+model MailLog {
+  id              String      @id @default(uuid(7)) @db.Uuid
+  userId          String      @db.Uuid
+  emailTemplateId String      @db.Uuid
+  resumeId        String?     @db.Uuid
+  recipientEmail  String      @db.VarChar(255)
+  status          MailStatus
+  sentAt          DateTime?
+  errorMessage    String?     @db.Text
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailTemplate EmailTemplate @relation(fields: [emailTemplateId], references: [id], onDelete: Cascade)
+  resume        Resume?       @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+}
+
+model Lead {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  userId    String   @db.Uuid
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmailFlag {
+  id          String     @id @default(uuid(7)) @db.Uuid
+  email       String     @unique @db.VarChar(255)
+  score       Int
+  flag        FlagStatus
+  lastUpdated DateTime   @default(now())
+}
+
+enum MailStatus {
+  SENT
+  FAILED
+  PENDING
+}
+
+enum FlagStatus {
+  GREEN
+  YELLOW
+  RED
 }
