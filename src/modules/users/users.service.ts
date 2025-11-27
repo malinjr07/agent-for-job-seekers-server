@@ -21,7 +21,7 @@ export class UsersService {
       lastName,
     });
 
-    const passwordHash = await hash(password, {
+    const passwordHash: string = await hash(password, {
       timeCost: 3,
       memoryCost: 12288, // 12 MB
       parallelism: 1,
@@ -32,10 +32,10 @@ export class UsersService {
 
     return this.prisma.user.create({
       data: {
-        email,
+        email: email.toLowerCase(),
         passwordHash,
-        firstName,
-        lastName,
+        firstName: firstName.toLowerCase(),
+        lastName: lastName.toLowerCase(),
       },
     });
   }

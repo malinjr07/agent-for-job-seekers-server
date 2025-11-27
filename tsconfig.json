@@ -16,7 +16,14 @@
     "baseUrl": "./",
     "paths": {
       "@dto/*": ["src/dto/*"],
-      "@prisma/*": ["src/prisma/*"]
+      "@prisma/*": ["src/prisma/*"],
+      "@modules/*": ["src/modules/*"],
+      "@config/*": ["src/config/*"],
+      "@middleware/*": ["src/middleware/*"],
+      "@decorators/*": ["src/common/decorators/*"],
+      "@guards/*": ["src/common/guards/*"],
+      "@pipes/*": ["src/common/pipes/*"],
+      "@utils/*": ["src/common/utils/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
