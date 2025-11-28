@@ -8,8 +8,7 @@ if (!existsSync(keysDir)) {
   mkdirSync(keysDir, { recursive: true });
 }
 
-const { privateKey, publicKey } = generateKeyPairSync('ec', {
-  namedCurve: 'P-256',
+const { privateKey, publicKey } = generateKeyPairSync('ed25519', {
   publicKeyEncoding: {
     type: 'spki',
     format: 'pem',

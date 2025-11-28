@@ -6,8 +6,6 @@ const keysDir = join(__dirname, 'keys');
 export const jwtConfig = {
   publicKey: readFileSync(join(keysDir, 'public.key')),
   privateKey: readFileSync(join(keysDir, 'private.key')),
-  signOptions: {
-    expiresIn: '7d' as const,
-    algorithm: 'ES256' as const,
-  },
+  algorithm: 'EdDSA' as const,
+  expiresInSeconds: 7 * 24 * 60 * 60,
 };

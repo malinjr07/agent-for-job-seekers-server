@@ -4,9 +4,9 @@ import {
   UnauthorizedException,
   ConflictException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '@prisma/prisma.service';
 import type { User, UserStatus } from '@prisma/client';
+import { sign as cryptoSign } from 'crypto';
 import { CreateUserDto } from './create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserResponseDto } from './dtos/user-response.dto';
@@ -14,13 +14,11 @@ import { LoginResponseDto } from './dtos/login-response.dto';
 import { PaginatedUsersResponseDto } from './dtos/paginated-users-response.dto';
 import { hash, verify } from 'argon2';
 import { plainToInstance } from 'class-transformer';
+import { jwtConfig } from '@config/jwt.config';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Create a new user
@@ -280,7 +278,8 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      console.log('User not found!', email);
+      throw new UnauthorizedException('User not found!');
     }
 
     const isPasswordValid = await this.verifyPassword(
@@ -323,12 +322,38 @@ export class UsersService {
    * Generate JWT token for user
    */
   private generateToken(user: User): string {
+    const now = Math.floor(Date.now() / 1000);
+
+    const header = {
+      alg: jwtConfig.algorithm,
+      typ: 'JWT' as const,
+    };
+
     const payload = {
       sub: user.id,
       email: user.email,
       handle: user.handle,
+      iat: now,
+      exp: now + jwtConfig.expiresInSeconds,
     };
 
-    return this.jwtService.sign(payload);
+    const encodedHeader = this.base64UrlEncode(JSON.stringify(header));
+    const encodedPayload = this.base64UrlEncode(JSON.stringify(payload));
+    const data = `${encodedHeader}.${encodedPayload}`;
+
+    const signature = cryptoSign(null, Buffer.from(data), jwtConfig.privateKey);
+    const encodedSignature = this.base64UrlEncode(signature);
+
+    return `${data}.${encodedSignature}`;
+  }
+
+  private base64UrlEncode(input: string | Buffer): string {
+    const buffer = typeof input === 'string' ? Buffer.from(input) : input;
+
+    return buffer
+      .toString('base64')
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
   }
 }
