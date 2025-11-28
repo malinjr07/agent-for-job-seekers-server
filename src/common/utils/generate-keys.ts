@@ -1,12 +1,8 @@
 import { generateKeyPairSync } from 'crypto';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const keysDir = join(__dirname, 'src/config/keys');
+const keysDir = join(process.cwd(), 'src/config/keys');
 
 if (!existsSync(keysDir)) {
   mkdirSync(keysDir, { recursive: true });

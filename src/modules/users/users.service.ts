@@ -205,6 +205,47 @@ export class UsersService {
     });
   }
 
+  async generateFakeUsers(count: number = 20): Promise<UserResponseDto[]> {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new NotFoundException();
+    }
+
+    const { faker } = await import('@faker-js/faker');
+
+    const users: UserResponseDto[] = [];
+
+    for (let i = 0; i < count; i += 1) {
+      const sex = faker.person.sexType();
+      const firstName = faker.person.firstName(sex);
+      const lastName = faker.person.lastName(sex);
+
+      const baseUsername = faker.internet
+        .username({ firstName, lastName })
+        .toLowerCase();
+      const safeUsername = baseUsername.replace(/[^a-z0-9_-]/g, '_');
+      const suffix = `${Date.now()}_${i}`;
+
+      const handle = `${safeUsername || 'user'}_${suffix}`.slice(0, 50);
+      const emailLocal = `${safeUsername || 'user'}+dev${suffix}`;
+      const email = `${emailLocal}@example.com`;
+
+      const random = faker.string.alphanumeric(8);
+      const password = `Aa1!${random}`;
+
+      const createdUser = await this.create({
+        email,
+        password,
+        firstName,
+        lastName,
+        handle,
+      });
+
+      users.push(createdUser);
+    }
+
+    return users;
+  }
+
   /**
    * Soft delete a user by setting status to DELETED
    */

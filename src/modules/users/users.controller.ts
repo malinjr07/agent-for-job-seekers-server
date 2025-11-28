@@ -65,6 +65,12 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  @Get('generators')
+  @HttpCode(HttpStatus.OK)
+  async generateUsers(): Promise<UserResponseDto[]> {
+    return this.usersService.generateFakeUsers();
+  }
+
   /**
    * Update user
    */

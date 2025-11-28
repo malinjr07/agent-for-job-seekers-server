@@ -70,3 +70,6 @@ src/prisma/migrations/*
 
 /.rag-docs/*
 /.conversations/*
+
+# Keys
+src/config/keys/*
