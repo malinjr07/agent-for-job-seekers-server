@@ -44,7 +44,7 @@ export class UsersController {
   /**
    * List all users with pagination, search, and filtering
    */
-  @Get()
+  @Get('list')
   async findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,

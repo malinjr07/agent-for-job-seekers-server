@@ -7,14 +7,7 @@ import {
   Matches,
   IsStrongPassword,
 } from 'class-validator';
-
-enum UserStatus {
-  ACTIVE = 'ACTIVE',
-  VERIFICATION_PENDING = 'VERIFICATION_PENDING',
-  DISABLED = 'DISABLED',
-  HIBERNATED = 'HIBERNATED',
-  DELETED = 'DELETED',
-}
+import { UserStatus } from '@prisma/client';
 
 export class UpdateUserDto {
   @IsEmail()
