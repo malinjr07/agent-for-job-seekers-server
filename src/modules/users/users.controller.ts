@@ -9,6 +9,7 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  All,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './create-user.dto';
@@ -58,13 +59,8 @@ export class UsersController {
   }
 
   /**
-   * Get user by ID
+   * Generate fake users
    */
-  @Get(':id')
-  async findOne(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.usersService.findOne(id);
-  }
-
   @Get('generators')
   @HttpCode(HttpStatus.OK)
   async generateUsers(): Promise<UserResponseDto[]> {
@@ -72,9 +68,17 @@ export class UsersController {
   }
 
   /**
+   * Get user by ID
+   */
+  @Get('single/:id')
+  async findOne(@Param('id') id: string): Promise<UserResponseDto> {
+    return this.usersService.findOne(id);
+  }
+
+  /**
    * Update user
    */
-  @Patch(':id')
+  @Patch('single/:id')
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -85,9 +89,19 @@ export class UsersController {
   /**
    * Soft delete user
    */
-  @Delete(':id')
+  @Delete('single/:id')
   @HttpCode(HttpStatus.OK)
   async softDelete(@Param('id') id: string): Promise<UserResponseDto> {
     return this.usersService.softDelete(id);
+  }
+
+  @All()
+  @All('*')
+  @HttpCode(HttpStatus.NOT_FOUND)
+  handleInvalidRequests() {
+    return {
+      statusCode: HttpStatus.NOT_FOUND,
+      message: 'Invalid users endpoint or HTTP method',
+    };
   }
 }

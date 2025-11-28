@@ -220,15 +220,10 @@ export class UsersService {
       const baseUsername = faker.internet
         .username({ firstName, lastName })
         .toLowerCase();
-      const safeUsername = baseUsername.replace(/[^a-z0-9_-]/g, '_');
-      const suffix = `${Date.now()}_${i}`;
+      const handle = baseUsername.replace(/[^a-z0-9_-]/g, '_');
+      const email = `${handle}@example.com`;
 
-      const handle = `${safeUsername || 'user'}_${suffix}`.slice(0, 50);
-      const emailLocal = `${safeUsername || 'user'}+dev${suffix}`;
-      const email = `${emailLocal}@example.com`;
-
-      const random = faker.string.alphanumeric(8);
-      const password = `Aa1!${random}`;
+      const password = faker.string.alphanumeric(12);
 
       const createdUser = await this.create({
         email,
