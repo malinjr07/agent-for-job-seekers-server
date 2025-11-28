@@ -13,13 +13,16 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(uuid(7)) @db.Uuid
-  email        String        @unique @db.VarChar(255)
-  passwordHash String        @db.VarChar(255)
-  firstName    String        @db.VarChar(100)
-  lastName     String        @db.VarChar(100)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id              String     @id @default(uuid(7)) @db.Uuid
+  email           String     @unique @db.VarChar(255)
+  passwordHash    String     @db.VarChar(255)
+  firstName       String     @db.VarChar(100)
+  lastName        String     @db.VarChar(100)
+  handle          String?    @unique @db.VarChar(50)
+  status          UserStatus @default(VERIFICATION_PENDING)
+  statusUpdatedAt DateTime   @default(now())
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   googleSheets   GoogleSheet[]
   emailTemplates EmailTemplate[]
@@ -121,6 +124,14 @@ model EmailFlag {
   score       Int
   flag        FlagStatus
   lastUpdated DateTime   @default(now())
+}
+
+enum UserStatus {
+  ACTIVE
+  VERIFICATION_PENDING
+  DISABLED
+  HIBERNATED
+  DELETED
 }
 
 enum MailStatus {

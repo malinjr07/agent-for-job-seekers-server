@@ -1,20 +1,29 @@
 import {
   IsEmail,
-  IsNotEmpty,
+  IsEnum,
+  IsOptional,
   IsString,
   Length,
   Matches,
   IsStrongPassword,
 } from 'class-validator';
 
-export class CreateUserDto {
+enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  VERIFICATION_PENDING = 'VERIFICATION_PENDING',
+  DISABLED = 'DISABLED',
+  HIBERNATED = 'HIBERNATED',
+  DELETED = 'DELETED',
+}
+
+export class UpdateUserDto {
   @IsEmail()
-  @IsNotEmpty({ message: 'Email is required' })
+  @IsOptional()
   @Matches(/^[\x20-\x7E]+$/, { message: 'Email must not contain emojis' })
-  email: string;
+  email?: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Password is required' })
+  @IsOptional()
   @Length(10, 16, { message: 'Password must be between 10 and 16 characters' })
   @IsStrongPassword(
     {
@@ -30,24 +39,28 @@ export class CreateUserDto {
     },
   )
   @Matches(/^[\x20-\x7E]+$/, { message: 'Password must not contain emojis' })
-  password: string;
+  password?: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'First name is required' })
+  @IsOptional()
   @Matches(/^[\x20-\x7E]+$/, { message: 'First name must not contain emojis' })
-  firstName: string;
+  firstName?: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Last name is required' })
+  @IsOptional()
   @Matches(/^[\x20-\x7E]+$/, { message: 'Last name must not contain emojis' })
-  lastName: string;
+  lastName?: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Handle is required' })
+  @IsOptional()
   @Length(3, 50, { message: 'Handle must be between 3 and 50 characters' })
   @Matches(/^[a-zA-Z0-9_-]+$/, {
     message:
       'Handle can only contain letters, numbers, underscores, and hyphens',
   })
-  handle: string;
+  handle?: string;
+
+  @IsEnum(UserStatus)
+  @IsOptional()
+  status?: UserStatus;
 }
