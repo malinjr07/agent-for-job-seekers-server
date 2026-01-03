@@ -25,49 +25,35 @@ model User {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 
-  googleSheets    GoogleSheet[]
-  googleAccounts  GoogleAccount[]
-  emailTemplates  EmailTemplate[]
-  resumes         Resume[]
-  mailLogs        MailLog[]
-  leads           Lead[]
+  leadSources    LeadSources[]
+  emailTemplates EmailTemplate[]
+  resumes        Resume[]
+  mailLogs       MailLog[]
+  leads          Lead[]
 }
 
-model GoogleAccount {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  userId    String   @db.Uuid
-  googleId  String   @db.VarChar(255)
-  email     String   @db.VarChar(255)
-  tokens    Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, googleId])
-}
-
-model GoogleSheet {
+model LeadSources {
   id         String   @id @default(uuid(7)) @db.Uuid
   userId     String   @db.Uuid
-  sheetUrl   String   @db.Text
-  sheetId    String   @db.VarChar(255)
-  currentTab String   @db.VarChar(100)
+  sourceType SourceType
+  sourceUri  String   @db.Text
+  meta       Json?
   createdAt  DateTime @default(now())
 
   user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   headers Header[]
+  leads   Lead[]
 }
 
 model Header {
-  id            String   @id @default(uuid(7)) @db.Uuid
-  googleSheetId String   @db.Uuid
-  tabName       String   @db.VarChar(100)
-  headers       Json?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String @id @default(uuid(7)) @db.Uuid
+  leadSourceId   String @db.Uuid
+  tabName        String? @db.VarChar(100)
+  headers        Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  googleSheet GoogleSheet @relation(fields: [googleSheetId], references: [id], onDelete: Cascade)
+  leadSource LeadSources @relation(fields: [leadSourceId], references: [id], onDelete: Cascade)
 }
 
 model EmailTemplate {
@@ -126,13 +112,19 @@ model MailLog {
 }
 
 model Lead {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  userId    String   @db.Uuid
-  data      Json
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String @id @default(uuid(7)) @db.Uuid
+  userId        String @db.Uuid
+  leadSourceId  String @db.Uuid
+  firstName     String? @db.VarChar(255)
+  lastName      String? @db.VarChar(255)
+  fullName      String? @db.VarChar(255)
+  emailAddress  String @unique @db.VarChar(255)
+  companyName   String @db.VarChar(255)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leadSource  LeadSources @relation(fields: [leadSourceId], references: [id], onDelete: Cascade)
 }
 
 model EmailFlag {
@@ -155,6 +147,13 @@ enum MailStatus {
   SENT
   FAILED
   PENDING
+}
+
+enum SourceType {
+  GOOGLE_SHEET
+  CSV
+  SPREADSHEET
+  JSON
 }
 
 enum FlagStatus {

@@ -6,6 +6,8 @@ import { CleanupModule } from './common/cleanup/cleanup.module';
 import { EmailTemplatesModule } from './modules/email-templates/email-templates.module';
 import { GoogleAuthModule } from './modules/google-auth/google-auth.module';
 import { GoogleSheetsModule } from './modules/google-sheets/google-sheets.module';
+import { ResumesModule } from './modules/resumes/resumes.module';
+import { LeadsModule } from './modules/leads/leads.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { GoogleSheetsModule } from './modules/google-sheets/google-sheets.module
     EmailTemplatesModule,
     GoogleAuthModule,
     GoogleSheetsModule,
+    ResumesModule,
+    LeadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

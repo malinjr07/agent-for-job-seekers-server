@@ -1,0 +1,26 @@
+# Windsurf Rules
+
+## General Protocols
+- **Documentation Check**: Before making changes, search for corresponding documentation within the `.rag-docs/` directory.
+- **External Documentation**: If no local docs exist, read `package.json` to identify library versions, then study the specific version's documentation from the web.
+- **Project Structure**: Read `README.md` to understand the directory structure and organization (Feature-Based Structure).
+- **Historical Context**: Review the `.conversations` directory to understand what has been done previously.
+
+## Tooling & Specific Preferences
+- **Package Manager**: Always use `yarn`.
+- **Import Aliases**: Strictly use the aliases defined in `tsconfig.json`. If you create new directories not covered by aliases, create a markdown file pointing them out.
+  - `@dto/*` -> `src/dto/*`
+  - `@prisma/*` -> `src/prisma/*`
+  - `@modules/*` -> `src/modules/*`
+  - `@config/*` -> `src/config/*`
+  - `@middleware/*` -> `src/middleware/*`
+  - `@decorators/*` -> `src/common/decorators/*`
+  - `@guards/*` -> `src/common/guards/*`
+  - `@pipes/*` -> `src/common/pipes/*`
+  - `@utils/*` -> `src/common/utils/*`
+
+## Technology Stack
+- **Framework**: NestJS
+- **ORM**: Prisma
+- **Database**: PostgreSQL
+- **Testing**: Jest
