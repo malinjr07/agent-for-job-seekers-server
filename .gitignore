@@ -66,10 +66,5 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 src/prisma/generated/*
 src/prisma/migrations/*
 
-# RAG Doc for AI Agent
-
-/.rag-docs/*
-/.conversations/*
-
 # Keys
 src/config/keys/*
